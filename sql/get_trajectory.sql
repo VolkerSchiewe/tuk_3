@@ -1,1 +1,1 @@
-SELECT * FROM Shenzhen WHERE 'ID' = {}
+SELECT * FROM Shenzhen WHERE ID = {}

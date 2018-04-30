@@ -10,7 +10,7 @@ def create_frame_groups():
         trajectories = connection.fetchall()
 
         for trajectory_id in trajectories:
-            connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id))
+            connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
             # todo get trajectory
             # todo interpolate
@@ -20,7 +20,8 @@ def create_frame_groups():
 
 
 def interpolate(previous, following):
-    np.interp()
+    x = 0  # todo find point between previous and following
+    np.interp(x, previous, following)
     pass
 
 
@@ -30,3 +31,5 @@ def create_new_table():
 
 def push_data():
     pass
+
+create_frame_groups()

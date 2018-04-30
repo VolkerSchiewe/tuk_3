@@ -1,1 +1,3 @@
-select * FROM shenzhen LIMIT 1000
+SELECT DISTINCT ID
+FROM Shenzhen
+ORDER BY ID;
