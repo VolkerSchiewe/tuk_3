@@ -31,9 +31,12 @@ def create_frame_groups():
 
 
 def interpolate(previous, following):
-    x = range(previous.id, following.id)  # todo find point between previous and following
-    array = np.interp(x, previous, following)
-    # todo create ew frames
+    x = range(previous.id, following.id)
+    array_lon = np.interp(x, (previous.id, following.id), (previous.x, following.x))
+    array_lat = np.interp(x, (previous.id, following.id), (previous.y, following.y))
+    array = []
+    for i in range(len(array_lon)):
+        array.append(Frame(x[i], array_lon[i], array_lat[i]))
     return array
 
 
