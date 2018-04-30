@@ -9,7 +9,9 @@ def create_frame_groups():
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
 
-        for trajectory in trajectories:
+        for trajectory_id in trajectories:
+            connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id))
+            trajectory = connection.fetchall()
             # todo get trajectory
             # todo interpolate
             # todo create framegroups
