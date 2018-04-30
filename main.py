@@ -1,5 +1,6 @@
 from hana_connector import HanaConnection
 from utils import read_sql
+import numpy as np
 
 
 def create_frame_groups():
@@ -9,10 +10,15 @@ def create_frame_groups():
         trajectories = connection.fetchall()
 
         for trajectory in trajectories:
-            print(trajectory)
+            # todo get trajectory
+            # todo interpolate
+            # todo create framegroups
+            # todo save frame group in hana
+            pass
 
 
-def interpolate():
+def interpolate(previous, following):
+    np.interp()
     pass
 
 
