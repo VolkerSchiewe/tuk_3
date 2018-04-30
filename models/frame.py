@@ -1,5 +1,5 @@
 class Frame:
     def __init__(self, id, x, y):
-        x= x
-        y = y
-        frame_id = id
+        self.x= x
+        self.y = y
+        self.id = id
