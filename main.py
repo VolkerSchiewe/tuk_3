@@ -19,12 +19,13 @@ def create_frame_groups():
 
                 if len(frames) > 0 and frame_id == frames[-1].id:
                     # todo SED
-                    pass
+                    continue
                 if len(frames) > 0 and frame_id != frames[-1].id + 1:
                     interpolated_frames = interpolate(frames[-1], frame)
                     frames = frames + interpolated_frames
                 frames.append(frame)
 
+            print(frames)
             # todo create framegroups
             # todo save frame group in hana
             pass
