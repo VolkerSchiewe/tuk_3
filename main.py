@@ -1,5 +1,6 @@
 from hana_connector import HanaConnection
 from models.frame import Frame
+from models.frame_group import FrameGroup
 from utils import read_sql
 import numpy as np
 
@@ -25,7 +26,7 @@ def create_frame_groups():
                     frames = frames + interpolated_frames
                 frames.append(frame)
 
-            print(frames)
+            frame_groups(trajectory_id, frames)
             # todo create framegroups
             # todo save frame group in hana
             pass
@@ -39,6 +40,43 @@ def interpolate(previous, following):
     for i in range(len(array_lon)):
         array.append(Frame(x[i], array_lon[i], array_lat[i]))
     return array
+
+
+def frame_groups(trajectory_id, frames):
+    groups = group_frames(frames)
+    frame_groups = []
+
+    for group_id, frames in groups.items():
+        i_frame = None
+        p_frames = []
+
+        if len(frames) > 0:
+            i_frame = frames[0]
+        if len(frames) > 1:
+            p_frames = [delta_encode(i_frame, frame) for frame in frames[1:len(frames)]]
+        frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, p_frames))
+
+    return frame_groups
+
+
+def group_frames(frames):
+    grouped_frames = {}
+
+    for frame in frames:
+        group_id = int((frame.id / 60) + 1)
+
+        if group_id in grouped_frames:
+            grouped_frames[group_id].append(frame)
+        else:
+            grouped_frames[group_id] = list()
+
+    return grouped_frames
+
+
+def delta_encode(i_frame, frame):
+    x = i_frame.x - frame.x
+    y = i_frame.y - frame.y
+    return Frame(frame.id, x, y)
 
 
 def create_new_table():
