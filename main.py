@@ -1,11 +1,12 @@
+import numpy as np
+
 from hana_connector import HanaConnection
 from models.frame import Frame
 from models.frame_group import FrameGroup
 from utils import read_sql
-import numpy as np
 
 
-def create_frame_groups():
+def run():
     with HanaConnection() as connection:
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
@@ -26,14 +27,14 @@ def create_frame_groups():
                     frames = frames + interpolated_frames
                 frames.append(frame)
 
-            frame_groups(trajectory_id, frames)
+            frame_groups = create_frame_groups(trajectory_id, frames)
             # todo create framegroups
             # todo save frame group in hana
             pass
 
 
 def interpolate(previous, following):
-    x = range(previous.id, following.id)
+    x = range(previous.id + 1, following.id)
     array_lon = np.interp(x, (previous.id, following.id), (previous.x, following.x))
     array_lat = np.interp(x, (previous.id, following.id), (previous.y, following.y))
     array = []
@@ -42,8 +43,8 @@ def interpolate(previous, following):
     return array
 
 
-def frame_groups(trajectory_id, frames):
-    groups = group_frames(frames)
+def create_frame_groups(trajectory_id, frames):
+    groups = group_frames_by_hour(frames)
     frame_groups = []
 
     for group_id, frames in groups.items():
@@ -59,16 +60,14 @@ def frame_groups(trajectory_id, frames):
     return frame_groups
 
 
-def group_frames(frames):
+def group_frames_by_hour(frames):
     grouped_frames = {}
 
     for frame in frames:
-        group_id = int((frame.id / 60) + 1)
-
-        if group_id in grouped_frames:
-            grouped_frames[group_id].append(frame)
-        else:
+        group_id = int(frame.id / 60) + 1
+        if group_id not in grouped_frames:
             grouped_frames[group_id] = list()
+        grouped_frames[group_id].append(frame)
 
     return grouped_frames
 
@@ -88,4 +87,4 @@ def push_data():
 
 
 if __name__ == '__main__':
-    create_frame_groups()
+    run()
