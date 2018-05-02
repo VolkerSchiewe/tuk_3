@@ -2,17 +2,16 @@ from consts import DB_TABLE
 
 
 def get_trajs_in_frame(fgid, fid, top_k=None):
-    # TODO change column names when column names were renamed
     top_string = ''
     if top_k:
         top_string = f'''TOP {top_k}'''
 
     sql = f'''
-    SELECT {top_string} FGID,
+    SELECT {top_string} TID,
     Ix + P{fid}x as LON,
     Iy + P{fid}y as LAT
     FROM {DB_TABLE}
-    WHERE TID = {fgid}
+    WHERE FGID = {fgid}
     '''
     return sql
 
@@ -23,12 +22,12 @@ def get_trajs_in_frame_range(first_fgid, last_fgid, first_fid, last_fid, top_k=N
         top_string = f'''TOP {top_k}'''
 
     sql = ''
-    filter_string = f'''WHERE TID >= {first_fgid} AND TID <= {last_fgid}'''
+    filter_string = f'''WHERE FGID >= {first_fgid} AND FGID <= {last_fgid}'''
     union_string = 'UNION ALL'
 
     for i in range(first_fid, last_fid + 1):
         sql += f'''
-        SELECT {top_string} FGID,
+        SELECT {top_string} TID,
         Ix + P{i}x as LON,
         Iy + P{i}y as LAT
         FROM {DB_TABLE}
