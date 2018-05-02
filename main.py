@@ -93,6 +93,10 @@ def insert_frame_groups(connection, frame_groups):
         connection.execute(sql)
         print(f'Inserted frame group into db: {frame_group.trajectory_id}:{frame_group.frame_group_id}')
 
+def run_requests():
+    with HanaConnection() as connection:
+        connection.execute(get_time_frame(1, 2, top_k=1000))
+        return connection.fetchall()
 
 if __name__ == '__main__':
     run()
