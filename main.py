@@ -91,7 +91,7 @@ def insert_frame_groups(connection, frame_groups):
     for frame_group in frame_groups:
         sql = get_insert(frame_group)
         connection.execute(sql)
-        print(f'Inserted frame group into db: {frame_group}')
+        print(f'Inserted frame group into db: {frame_group.trajectory_id}:{frame_group.frame_group_id}')
 
 
 if __name__ == '__main__':
