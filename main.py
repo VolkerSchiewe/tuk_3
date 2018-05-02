@@ -3,6 +3,8 @@ import numpy as np
 from hana_connector import HanaConnection
 from models.frame import Frame
 from models.frame_group import FrameGroup
+from sql.create_table import get_create_table
+from sql.frame_group import get_insert
 from utils import read_sql
 
 
@@ -10,6 +12,7 @@ def run():
     with HanaConnection() as connection:
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
+        # create_new_table(connection)
 
         for trajectory_id in trajectories:
             frames = []
@@ -27,10 +30,8 @@ def run():
                     frames = frames + interpolated_frames
                 frames.append(frame)
 
-            frame_groups = create_frame_groups(trajectory_id, frames)
-            # todo create framegroups
-            # todo save frame group in hana
-            pass
+            frame_groups = create_frame_groups(trajectory_id[0], frames)
+            insert_frame_groups(connection, frame_groups)
 
 
 def interpolate(previous, following):
@@ -55,6 +56,10 @@ def create_frame_groups(trajectory_id, frames):
             i_frame = frames[0]
         if len(frames) > 1:
             p_frames = [delta_encode(i_frame, frame) for frame in frames[1:len(frames)]]
+        # TODO: Remove padding!
+        if len(p_frames) < 60:
+            for i in range(len(p_frames) + 1, 60):
+                p_frames.append(Frame(0, 0, 0))
         frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, p_frames))
 
     return frame_groups
@@ -78,12 +83,15 @@ def delta_encode(i_frame, frame):
     return Frame(frame.id, x, y)
 
 
-def create_new_table():
-    pass
+def create_new_table(connection):
+    connection.execute(get_create_table(60))
 
 
-def push_data():
-    pass
+def insert_frame_groups(connection, frame_groups):
+    for frame_group in frame_groups:
+        sql = get_insert(frame_group)
+        connection.execute(sql)
+        print(f'Inserted frame group into db: {frame_group}')
 
 
 if __name__ == '__main__':
