@@ -1,9 +1,9 @@
-def frame_list_equals(frames, other_frame):
-    if len(frames) != len(other_frame):
+def frame_list_equals(frames, other_frames):
+    if len(frames) != len(other_frames):
         return False
 
-    for i, frame in enumerate(frames):
-        if not frame_equals(frame, other_frame[i]):
+    for frame, other_frame in zip(frames, other_frames):
+        if not frame_equals(frame, other_frame):
             return False
 
     return True

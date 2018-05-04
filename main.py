@@ -1,12 +1,12 @@
-import numpy as np
-
 from frame_utils import interpolate_missing_frames
 from hana_connector import HanaConnection
 from models.frame import Frame
 from models.frame_group import FrameGroup
+from models.sample import Sample
+from sample_utils import sample_with_highest_sed
 from sql.create_table import get_create_table
 from sql.frame_group import get_insert
-from utils import read_sql
+from sql_utils import read_sql
 
 
 def run():
@@ -16,23 +16,39 @@ def run():
         # create_new_table(connection)
 
         for trajectory_id in trajectories:
-            frames = []
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
-            for sample in trajectory:
-                frame_id = sample[1].hour * 60 + sample[1].minute
-                frame = Frame(frame_id, sample[2], sample[3])
-
-                if len(frames) > 0 and frame_id == frames[-1].id:
-                    # todo SED
-                    continue
-                if len(frames) > 0 and frame_id != frames[-1].id + 1:
-                    interpolated_frames = interpolate_missing_frames(frames[-1], frame)
-                    frames = frames + interpolated_frames
-                frames.append(frame)
-
-            frame_groups = create_frame_groups(trajectory_id[0], frames)
+            frame_groups = create_frame_groups_for_trajectory(trajectory_id[0], trajectory)
             insert_frame_groups(connection, frame_groups)
+
+
+def create_frame_groups_for_trajectory(trajectory_id, trajectory):
+    frames = []
+    current_frame_id = 0
+    samples_in_frame = []
+
+    for row in trajectory:
+        sample = Sample.from_tuple(row)
+        is_first = len(frames) == 0
+        in_current_frame = sample.frame_id() == current_frame_id()
+
+        if is_first or in_current_frame:
+            samples_in_frame.append(sample)
+            current_frame_id = sample.frame_id()
+        else:
+            # New sample is not in the same frame, create new frame from previous samples
+            # When only a single sample was collected, it is returned, otherwise sed is used.
+            selected_sample = sample_with_highest_sed(samples_in_frame, frames[-1], sample.to_frame())
+            frames.append(selected_sample.to_frame())
+
+            # See if additional frames have to be generated
+            expected_frame_id = frames[-1].id + 1
+
+            if sample.frame_id() != expected_frame_id:
+                interpolated_frames = interpolate_missing_frames(frames[-1], sample.to_frame())
+                frames = frames + interpolated_frames
+
+    return create_frame_groups(trajectory_id, frames)
 
 
 def create_frame_groups(trajectory_id, frames):
