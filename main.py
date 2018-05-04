@@ -1,5 +1,6 @@
 import numpy as np
 
+from frame_utils import interpolate_missing_frames
 from hana_connector import HanaConnection
 from models.frame import Frame
 from models.frame_group import FrameGroup
@@ -26,22 +27,12 @@ def run():
                     # todo SED
                     continue
                 if len(frames) > 0 and frame_id != frames[-1].id + 1:
-                    interpolated_frames = interpolate(frames[-1], frame)
+                    interpolated_frames = interpolate_missing_frames(frames[-1], frame)
                     frames = frames + interpolated_frames
                 frames.append(frame)
 
             frame_groups = create_frame_groups(trajectory_id[0], frames)
             insert_frame_groups(connection, frame_groups)
-
-
-def interpolate(previous, following):
-    x = range(previous.id + 1, following.id)
-    array_lon = np.interp(x, (previous.id, following.id), (previous.x, following.x))
-    array_lat = np.interp(x, (previous.id, following.id), (previous.y, following.y))
-    array = []
-    for i in range(len(array_lon)):
-        array.append(Frame(x[i], array_lon[i], array_lat[i]))
-    return array
 
 
 def create_frame_groups(trajectory_id, frames):
