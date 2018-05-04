@@ -1,6 +1,6 @@
 import unittest
 
-from frame_utils import interpolate_missing_frames
+from frame_utils import interpolate_missing_frames, _euclidean_distance
 from models.frame import Frame
 from test.assertion_utils import frame_list_equals
 
