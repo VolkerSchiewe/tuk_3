@@ -18,3 +18,9 @@ class Sample:
     @classmethod
     def from_tuple(cls, tuple):
         return Sample(tuple[1], tuple[2], tuple[3], tuple[4], tuple[5])
+
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(self, other.__class__):
+            return self.__dict__ == other.__dict__
+        return False
