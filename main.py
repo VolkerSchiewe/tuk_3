@@ -65,18 +65,22 @@ def create_frame_groups(trajectory_id, frames):
     for group_id, frames in groups.items():
         i_frame = None
         p_frames = []
-
         if len(frames) > 0:
             i_frame = frames[0]
         if len(frames) > 1:
             p_frames = [delta_encode(i_frame, frame) for frame in frames[1:len(frames)]]
-        # TODO: Remove padding!
-        if len(p_frames) < 60:
-            for i in range(len(p_frames) + 1, 60):
-                p_frames.append(Frame(0, 0, 0))
-        frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, p_frames))
+        padded_p_frames = add_padding(p_frames, 59)
+        frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, padded_p_frames))
 
     return frame_groups
+
+
+def add_padding(frames, n):
+    padded_frames = []
+    padded_frames += [Frame(0, 0, 0)] * (frames[0].id - 1)
+    padded_frames += frames
+    padded_frames += [Frame(0, 0, 0)] * (n - frames[-1].id)
+    return padded_frames
 
 
 def group_frames_by_hour(frames):
@@ -92,8 +96,8 @@ def group_frames_by_hour(frames):
 
 
 def delta_encode(i_frame, frame):
-    x = i_frame.x - frame.x
-    y = i_frame.y - frame.y
+    x = frame.x - i_frame.x
+    y = frame.y - i_frame.y
     return Frame(frame.id, x, y)
 
 

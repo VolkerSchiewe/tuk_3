@@ -1,7 +1,8 @@
 import datetime
 
-from main import create_frames
+from main import create_frames, create_frame_groups, add_padding
 from models.frame import Frame
+from models.frame_group import FrameGroup
 
 
 def test_create_frames_groups_sample_in_same_minute():
@@ -56,3 +57,26 @@ def test_create_frames_performs_sed_to_select_samples_in_same_frame():
     expected_frames = [Frame(1, 100.0, 100.0), Frame(2, 200.0, 100.5), Frame(3, 150.0, 105.5)]
     actual_frames = create_frames(trajectory)
     assert actual_frames == expected_frames
+
+
+def test_create_frame_groups():
+    trajectory_id = 1
+    frames = [Frame(1, 100.0, 100.0), Frame(2, 200.0, 100.0), Frame(3, 150.0, 150.0)]
+    i_frame = Frame(1, 100.0, 100.0)
+    p_frames = [Frame(0, 0.0, 0.0), Frame(2, 100.0, 0.0), Frame(3, 50.0, 50.0)]
+    p_frames += [Frame(0, 0.0, 0.0)] * 56
+    expected_frame_groups = [FrameGroup(trajectory_id, 1, i_frame, p_frames)]
+    actual_frame_groups = create_frame_groups(trajectory_id, frames)
+    assert actual_frame_groups == expected_frame_groups
+
+
+def test_add_padding_fills_missing_frames_for_n_minutes_at_beginning_and_end():
+    frames = [Frame(2, 200.0, 100.0), Frame(3, 150.0, 150.0)]
+    expected_frames = [Frame(0, 0.0, 0.0), Frame(2, 200.0, 100.0), Frame(3, 150.0, 150.0)]
+    expected_frames += [Frame(0, 0.0, 0.0)] * 56
+    actual_frames = add_padding(frames, 59)
+    assert actual_frames == expected_frames
+
+
+if __name__ == '__main__':
+    test_add_padding_fills_missing_frames_for_n_minutes_at_beginning_and_end()
