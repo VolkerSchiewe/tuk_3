@@ -31,25 +31,30 @@ def create_frames(trajectory):
     for row in trajectory:
         sample = Sample.from_row(row)
         in_current_frame = sample.frame_id() == current_frame_id
-        is_first = len(frames) == 0
 
         if not in_current_frame:
             if len(samples_in_frame) > 0:
                 # Create a frame from collected samples, uses SED if necessary
-                start_frame = frames[-1] if not is_first else samples_in_frame[0].to_frame()
-                end_frame = sample.to_frame()
-                selected_sample = sample_with_highest_sed(samples_in_frame, start_frame, end_frame)
+                previous_frame = frames[-1] if len(frames) > 0 else samples_in_frame[0].to_frame()
+                following_frame = sample.to_frame()
+                selected_sample = sample_with_highest_sed(samples_in_frame, previous_frame, following_frame)
                 frames.append(selected_sample.to_frame())
                 samples_in_frame = []
 
             # Interpolate missing frames
-            if not is_first and sample.frame_id() != current_frame_id + 1:
+            if len(frames) > 0 and sample.frame_id() != current_frame_id + 1:
                 interpolated_frames = interpolate_missing_frames(frames[-1], sample.to_frame())
                 frames = frames + interpolated_frames
             current_frame_id = sample.frame_id()
 
         samples_in_frame.append(sample)
 
+    # Flush pending samples
+    if len(samples_in_frame) > 0:
+        previous_frame = frames[-1] if len(frames) > 0 else samples_in_frame[0].to_frame()
+        following_frame = samples_in_frame[-1].to_frame()
+        selected_sample = sample_with_highest_sed(samples_in_frame, previous_frame, following_frame)
+        frames.append(selected_sample.to_frame())
     return frames
 
 
