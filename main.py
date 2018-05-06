@@ -76,10 +76,12 @@ def create_frame_groups(trajectory_id, frames):
 
 
 def add_padding(frames, n):
+    first_id = (frames[0].id % 60)
     padded_frames = []
-    padded_frames += [Frame(0, 0, 0)] * (frames[0].id - 1)
+    padded_frames += [Frame(0, 0, 0)] * (first_id - 1)
     padded_frames += frames
-    padded_frames += [Frame(0, 0, 0)] * (n - frames[-1].id)
+    padded_frames += [Frame(0, 0, 0)] * (n - len(padded_frames))
+    assert len(padded_frames) == n
     return padded_frames
 
 

@@ -78,5 +78,7 @@ def test_add_padding_fills_missing_frames_for_n_minutes_at_beginning_and_end():
     assert actual_frames == expected_frames
 
 
-if __name__ == '__main__':
-    test_add_padding_fills_missing_frames_for_n_minutes_at_beginning_and_end()
+def test_add_no_padding_if_frame_is_full():
+    frames = [Frame(1, 200.0, 100.0)] * 59
+    actual_frames = add_padding(frames, 59)
+    assert actual_frames == frames
