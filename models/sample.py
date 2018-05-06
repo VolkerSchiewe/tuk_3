@@ -4,7 +4,7 @@ from models.frame import Frame
 
 
 class Sample:
-    def __init__(self, timestamp: datetime.time, x: float, y: float, speed: int, occupancy: int):
+    def __init__(self, timestamp: datetime.datetime, x: float, y: float, speed: int, occupancy: int):
         self.timestamp = timestamp
         self.x = x
         self.y = y
