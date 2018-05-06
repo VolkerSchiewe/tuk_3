@@ -1,6 +1,6 @@
 import datetime
 
-from main import create_frames, create_frame_groups, add_padding
+from main import create_frames, create_frame_groups, add_padding, delta_encode
 from models.frame import Frame
 from models.frame_group import FrameGroup
 
@@ -82,3 +82,11 @@ def test_add_no_padding_if_frame_is_full():
     frames = [Frame(1, 200.0, 100.0)] * 59
     actual_frames = add_padding(frames, 59)
     assert actual_frames == frames
+
+
+def test_delta_encoding():
+    i_frame = Frame(1, 100.0, 100.0)
+    frame = Frame(1, 150.0, 50.0)
+    expected_p_frame = Frame(1, 50.0, -50.0)
+    actual_p_frame = delta_encode(i_frame, frame)
+    assert actual_p_frame == expected_p_frame

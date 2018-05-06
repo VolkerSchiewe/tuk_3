@@ -1,12 +1,9 @@
-from frame_utils import interpolate_missing_frames
+from frame_utils import interpolate_missing_frames, group_frames_by_hour, delta_encode, add_padding
 from hana_connector import HanaConnection
-from models.frame import Frame
 from models.frame_group import FrameGroup
 from models.sample import Sample
 from sample_utils import sample_with_highest_sed
-from sql.create_table import get_create_table
-from sql.frame_group import get_insert
-from sql_utils import read_sql
+from sql_utils import read_sql, insert_frame_groups
 
 
 def run():
@@ -73,45 +70,6 @@ def create_frame_groups(trajectory_id, frames):
         frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, padded_p_frames))
 
     return frame_groups
-
-
-def add_padding(frames, n):
-    first_id = (frames[0].id % 60)
-    padded_frames = []
-    padded_frames += [Frame(0, 0, 0)] * (first_id - 1)
-    padded_frames += frames
-    padded_frames += [Frame(0, 0, 0)] * (n - len(padded_frames))
-    assert len(padded_frames) == n
-    return padded_frames
-
-
-def group_frames_by_hour(frames):
-    grouped_frames = {}
-
-    for frame in frames:
-        group_id = int(frame.id / 60) + 1
-        if group_id not in grouped_frames:
-            grouped_frames[group_id] = list()
-        grouped_frames[group_id].append(frame)
-
-    return grouped_frames
-
-
-def delta_encode(i_frame, frame):
-    x = frame.x - i_frame.x
-    y = frame.y - i_frame.y
-    return Frame(frame.id, x, y)
-
-
-def create_new_table(connection):
-    connection.execute(get_create_table(60))
-
-
-def insert_frame_groups(connection, frame_groups):
-    for frame_group in frame_groups:
-        sql = get_insert(frame_group)
-        connection.execute(sql)
-        print(f'Inserted frame group into db: {frame_group.trajectory_id}:{frame_group.frame_group_id}')
 
 
 if __name__ == '__main__':
