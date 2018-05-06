@@ -84,6 +84,13 @@ def test_add_no_padding_if_frame_is_full():
     assert actual_frames == frames
 
 
+def test_add_full_padding_frame():
+    frames = []
+    expected_frames = [Frame(0, 0, 0)] * 59
+    actual_frames = add_padding(frames, 59)
+    assert actual_frames == expected_frames
+
+
 def test_delta_encoding():
     i_frame = Frame(1, 100.0, 100.0)
     frame = Frame(1, 150.0, 50.0)

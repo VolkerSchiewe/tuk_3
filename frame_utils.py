@@ -12,7 +12,7 @@ def interpolate_missing_frames(previous, following):
 
 
 def add_padding(frames, n):
-    first_id = (frames[0].id % n)
+    first_id = (frames[0].id % 60) if len(frames) > 0 else 0
     padded_frames = []
     padded_frames += [Frame(0, 0, 0)] * (first_id - 1)
     padded_frames += frames
