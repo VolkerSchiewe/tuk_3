@@ -4,6 +4,9 @@ from models.frame_group import FrameGroup
 from models.sample import Sample
 from sample_utils import sample_with_highest_sed
 from sql_utils import read_sql, insert_frame_groups
+from tracker import Tracker
+
+tracker = Tracker()
 
 
 def run():
@@ -18,6 +21,7 @@ def run():
             frames = create_frames(trajectory)
             frame_groups = create_frame_groups(trajectory_id[0], frames)
             insert_frame_groups(connection, frame_groups)
+            tracker.print()
 
 
 def create_frames(trajectory):
@@ -26,6 +30,7 @@ def create_frames(trajectory):
     samples_in_frame = []
 
     for row in trajectory:
+        tracker.track_sample()
         sample = Sample.from_row(row)
         in_current_frame = sample.frame_id() == current_frame_id
 
@@ -36,11 +41,13 @@ def create_frames(trajectory):
                 following_frame = sample.to_frame()
                 selected_sample = sample_with_highest_sed(samples_in_frame, previous_frame, following_frame)
                 frames.append(selected_sample.to_frame())
+                tracker.track_frame(len(samples_in_frame))
                 samples_in_frame = []
 
             # Interpolate missing frames
             if len(frames) > 0 and sample.frame_id() != current_frame_id + 1:
                 interpolated_frames = interpolate_missing_frames(frames[-1], sample.to_frame())
+                tracker.track_interpolated_frames(len(interpolated_frames))
                 frames = frames + interpolated_frames
             current_frame_id = sample.frame_id()
 
