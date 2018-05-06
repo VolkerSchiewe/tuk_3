@@ -8,9 +8,8 @@ class FrameGroup:
         self.i_frame = i_frame
         self.p_frames = p_frames
 
-    def delta_encoding(self):
-        raw_x = self.i_frame.x
-        raw_y = self.i_frame.y
-        for frame in self.p_frames:
-            frame.x = frame.x - raw_x
-            frame.y = frame.y - raw_y
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(self, other.__class__):
+            return self.__dict__ == other.__dict__
+        return False

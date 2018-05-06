@@ -1,4 +1,4 @@
-def create_table(frame_size):
+def get_create_table(frame_size):
     name = 'shenzen_shark_db'
     sql = f'''
         CREATE COLUMN TABLE {name} (
