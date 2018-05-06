@@ -18,17 +18,18 @@ def run():
         for trajectory_id in trajectories:
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
-            frame_groups = create_frame_groups_for_trajectory(trajectory_id[0], trajectory)
+            frames = create_frames(trajectory)
+            frame_groups = create_frame_groups(trajectory_id[0], frames)
             insert_frame_groups(connection, frame_groups)
 
 
-def create_frame_groups_for_trajectory(trajectory_id, trajectory):
+def create_frames(trajectory):
     frames = []
     current_frame_id = 0
     samples_in_frame = []
 
     for row in trajectory:
-        sample = Sample.from_tuple(row)
+        sample = Sample.from_row(row)
         in_current_frame = sample.frame_id() == current_frame_id
         is_first = len(frames) == 0
 
@@ -49,7 +50,7 @@ def create_frame_groups_for_trajectory(trajectory_id, trajectory):
 
         samples_in_frame.append(sample)
 
-    return create_frame_groups(trajectory_id, frames)
+    return frames
 
 
 def create_frame_groups(trajectory_id, frames):
