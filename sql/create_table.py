@@ -2,8 +2,8 @@ def get_create_table(frame_size):
     name = 'shenzen_shark_db_120'
     sql = f'''
         CREATE COLUMN TABLE {name} (
-        FGID INTEGER,
         TID INTEGER,
+        FGID INTEGER,
         Ix DOUBLE,
         Iy DOUBLE,'''
 
