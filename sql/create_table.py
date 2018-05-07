@@ -1,7 +1,9 @@
+from consts import DB_TABLE
+
+
 def get_create_table(frame_size):
-    name = 'shenzen_shark_db_120'
     sql = f'''
-        CREATE COLUMN TABLE {name} (
+        CREATE COLUMN TABLE {DB_TABLE} (
         TID INTEGER,
         FGID INTEGER,
         Ix DOUBLE,
