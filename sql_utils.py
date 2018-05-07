@@ -8,7 +8,7 @@ def read_sql(file_name):
 
 
 def create_new_table(connection):
-    connection.execute(get_create_table(60))
+    connection.execute(get_create_table(120))
 
 
 def insert_frame_groups(connection, frame_groups):

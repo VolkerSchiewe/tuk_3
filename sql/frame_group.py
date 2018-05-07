@@ -1,5 +1,5 @@
 def get_insert(frame_group):
-    name = 'shenzen_shark_db'
+    name = 'shenzen_shark_db_120'
     sql = f'''
         INSERT INTO {name} VALUES (
         {frame_group.trajectory_id},

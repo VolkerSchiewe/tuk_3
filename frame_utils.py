@@ -25,7 +25,7 @@ def group_frames_by_hour(frames):
     grouped_frames = {}
 
     for frame in frames:
-        group_id = int(frame.id / 60) + 1
+        group_id = int(frame.id / 120) + 1
         if group_id not in grouped_frames:
             grouped_frames[group_id] = list()
         grouped_frames[group_id].append(frame)
