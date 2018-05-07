@@ -13,7 +13,7 @@ def run():
     with HanaConnection() as connection:
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
-        create_new_table(connection)
+        # create_new_table(connection)
 
         for trajectory_id in trajectories:
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
