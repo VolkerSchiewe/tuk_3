@@ -19,7 +19,7 @@ class Sample:
         return Frame(self.frame_id(), self.x, self.y)
 
     def frame_id(self):
-        return self.timestamp.hour * 60 + self.timestamp.minute
+        return self.timestamp.hour * 120 + self.timestamp.minute * 2 + int(self.timestamp.second / 30)
 
     def __eq__(self, other):
         """Overrides the default implementation"""

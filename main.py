@@ -3,7 +3,7 @@ from hana_connector import HanaConnection
 from models.frame_group import FrameGroup
 from models.sample import Sample
 from sample_utils import sample_with_highest_sed
-from sql_utils import read_sql, insert_frame_groups
+from sql_utils import read_sql, create_new_table, insert_frame_groups
 from tracker import Tracker
 
 tracker = Tracker()
@@ -73,7 +73,7 @@ def create_frame_groups(trajectory_id, frames):
             i_frame = frames[0]
         if len(frames) > 1:
             p_frames = [delta_encode(i_frame, frame) for frame in frames[1:len(frames)]]
-        padded_p_frames = add_padding(p_frames, 59)
+        padded_p_frames = add_padding(p_frames, 119)
         frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, padded_p_frames))
 
     return frame_groups
