@@ -3,6 +3,7 @@ from hana_connector import HanaConnection
 from models.frame_group import FrameGroup
 from models.sample import Sample
 from sample_utils import sample_with_highest_sed
+from sql.get_trajectories_shark import get_trajs_in_frame
 from sql_utils import read_sql, create_new_table, insert_frame_groups
 from tracker import Tracker
 
@@ -78,9 +79,10 @@ def create_frame_groups(trajectory_id, frames):
 
     return frame_groups
 
+
 def run_requests():
     with HanaConnection() as connection:
-        connection.execute(get_time_frame(1, 2, top_k=1000))
+        connection.execute(get_trajs_in_frame(1, 2, top_k=1000))
         return connection.fetchall()
 
 

@@ -15,6 +15,7 @@ def get_trajs_in_frame(fgid, fid, top_k=None):
     '''
     return sql
 
+
 def get_trajs_in_frame_range(first_fgid, last_fgid, first_fid, last_fid, top_k=None):
     # TODO change column names when column names were renamed
     top_string = ''
