@@ -1,7 +1,10 @@
+from consts import DB_TABLE
+
+
 def get_insert(frame_group):
-    name = 'shenzen_shark_db'
     sql = f'''
-        INSERT INTO {name} VALUES (
+        INSERT INTO {DB_TABLE} VALUES (
+        {frame_group.trajectory_id},
         {frame_group.frame_group_id},
         {frame_group.trajectory_id},
         {frame_group.i_frame.x},
