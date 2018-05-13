@@ -5,7 +5,7 @@ def trajectory_in_group_range_sample_point(trajectory_id, first_group_id, last_g
     union_string = 'UNION ALL'
     filter_string = f'''
         WHERE FGID >= {first_group_id}
-        AND FGID <= {last_group_id}
+        AND FGID < {last_group_id}
         AND TID = {trajectory_id}'''
     sql = f'''
             SELECT TID,
