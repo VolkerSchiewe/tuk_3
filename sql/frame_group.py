@@ -6,6 +6,7 @@ def get_insert(frame_group):
         INSERT INTO {DB_TABLE} VALUES (
         {frame_group.trajectory_id},
         {frame_group.frame_group_id},
+        {frame_group.trajectory_id},
         {frame_group.i_frame.x},
         {frame_group.i_frame.y},'''
 
