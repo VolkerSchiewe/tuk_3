@@ -4,8 +4,10 @@ from consts import DB_TABLE
 def get_create_table(frame_size):
     sql = f'''
         CREATE COLUMN TABLE {DB_TABLE} (
-        TID INTEGER,
-        FGID INTEGER,
+        trajectory_id INTEGER,
+        group_id INTEGER,
+        trip_id INTEGER,
+        occupancy BOOLEAN,
         Ix DOUBLE,
         Iy DOUBLE,'''
 
