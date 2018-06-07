@@ -2,9 +2,10 @@ from frame_utils import interpolate_missing_frames, group_frames, delta_encode, 
 from hana_connector import HanaConnection
 from models.frame_group import FrameGroup
 from models.sample import Sample
+from models.key_value import KeyValue
 from sample_utils import sample_with_highest_sed
 from sql.get_trajectories_shark import trajectories_in_group_range
-from sql_utils import read_sql, insert_frame_groups, create_new_table
+from sql_utils import read_sql, insert_frame_groups, create_new_table, insert_key_value, create_key_value_format
 from tracker import Tracker
 
 tracker = Tracker()
@@ -15,14 +16,48 @@ def run():
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
         # create_new_table(connection)
+        # create_key_value_format(connection)
 
         for trajectory_id in trajectories:
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
-            frames = create_frames(trajectory)
-            frame_groups = create_frame_groups(trajectory_id[0], frames)
-            insert_frame_groups(connection, frame_groups)
-            tracker.print()
+            key_value = create_key_value(trajectory_id[0], trajectory)
+            insert_key_value(connection, key_value)
+            tracker.print_samples_per_key_value(trajectory_id[0])
+
+            #frames = create_frames(trajectory)
+            #frame_groups = create_frame_groups(trajectory_id[0], frames)
+            #insert_frame_groups(connection, frame_groups)
+            #tracker.print()
+
+
+def create_key_value(trajectory_id, trajectory):
+
+    # creating trajectory object
+    trajectory_obj = []
+    x = []
+    y = []
+    for row in trajectory:
+        tracker.track_sample()
+        sample = Sample.from_row(row)
+        trajectory_obj.append([str(sample.timestamp), sample.x, sample.y])
+        x.append(sample.x)
+        y.append(sample.y)
+
+    # get trajectory start timestamp
+    sample_st = Sample.from_row(trajectory[0])
+    trajectory_st = sample_st.timestamp
+
+    # get trajectory end timestamp
+    sample_et = Sample.from_row(trajectory[-1])
+    trajectory_et = sample_et.timestamp
+
+    # MBR: A rectangle, oriented to the x- and y-axes,
+    # that bounds a geographic feature or a geographic dataset.
+    # It is specified by two coordinate pairs: xmin, ymin and xmax, ymax.
+    trajectory_mbr = [min(x), min(y), max(x), max(y)]
+    key_value = KeyValue(str(trajectory_id), str(trajectory_obj), str(trajectory_st), str(trajectory_et), str(trajectory_mbr))
+    return key_value
 
 
 def create_frames(trajectory):
