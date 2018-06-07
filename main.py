@@ -22,13 +22,22 @@ def run():
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
             key_value = create_key_value(trajectory_id[0], trajectory)
+            # write_to_csv(key_value)
             insert_key_value(connection, key_value)
-            tracker.print_samples_per_key_value(trajectory_id[0])
+            print(f'Trajectory {trajectory_id} was processed')
 
             #frames = create_frames(trajectory)
             #frame_groups = create_frame_groups(trajectory_id[0], frames)
             #insert_frame_groups(connection, frame_groups)
             #tracker.print()
+
+
+def write_to_csv(key_value: KeyValue):
+    download_dir = "key_value.csv"  # where you want the file to be downloaded to
+
+    csv = open(download_dir, "w")
+    row = f'''{key_value.id}, {key_value.obj}, {key_value.start}, {key_value.end}, {key_value.mbr}'''
+    csv.write(row)
 
 
 def create_key_value(trajectory_id, trajectory):
@@ -38,7 +47,6 @@ def create_key_value(trajectory_id, trajectory):
     x = []
     y = []
     for row in trajectory:
-        tracker.track_sample()
         sample = Sample.from_row(row)
         trajectory_obj.append([str(sample.timestamp), sample.x, sample.y])
         x.append(sample.x)
@@ -56,7 +64,7 @@ def create_key_value(trajectory_id, trajectory):
     # that bounds a geographic feature or a geographic dataset.
     # It is specified by two coordinate pairs: xmin, ymin and xmax, ymax.
     trajectory_mbr = [min(x), min(y), max(x), max(y)]
-    key_value = KeyValue(str(trajectory_id), str(trajectory_obj), str(trajectory_st), str(trajectory_et), str(trajectory_mbr))
+    key_value = KeyValue(trajectory_id, trajectory_obj, trajectory_st, trajectory_et, trajectory_mbr)
     return key_value
 
 

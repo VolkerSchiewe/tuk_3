@@ -19,5 +19,3 @@ class Tracker:
         print(f'Tracked {self.samples} samples, {self.frames_interpolated} frames were interpolated, '
               f'{self.samples_per_frame / self.frames} samples per frame were found.')
 
-    def print_samples_per_key_value(self, trajectory_id):
-        print(f'Tracked trajectory id {trajectory_id} with {self.samples} samples.')

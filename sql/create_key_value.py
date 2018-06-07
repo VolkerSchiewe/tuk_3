@@ -8,7 +8,7 @@ def get_create_key_value_table():
         trajectory_object NCLOB,
         trajectory_st TIMESTAMP,
         trajectory_et TIMESTAMP,
-        trajectory_mbr VARCHAR(255)'''
+        trajectory_mbr VARCHAR(50)'''
 
     sql += ')'
     return sql
