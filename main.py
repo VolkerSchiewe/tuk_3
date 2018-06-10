@@ -7,6 +7,8 @@ from sample_utils import sample_with_highest_sed
 from sql.get_trajectories_shark import trajectories_in_group_range
 from sql_utils import read_sql, insert_frame_groups, create_new_table, insert_key_value, create_key_value_format
 from tracker import Tracker
+import os
+import json
 
 tracker = Tracker()
 
@@ -16,13 +18,12 @@ def run():
         connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
         # create_new_table(connection)
-        # create_key_value_format(connection)
+        create_key_value_format(connection)
 
         for trajectory_id in trajectories:
             connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             trajectory = connection.fetchall()
             key_value = create_key_value(trajectory_id[0], trajectory)
-            # write_to_csv(key_value)
             insert_key_value(connection, key_value)
             print(f'Trajectory {trajectory_id} was processed')
 
@@ -40,6 +41,14 @@ def write_to_csv(key_value: KeyValue):
     csv.write(row)
 
 
+def write_row_to_file(key_value: KeyValue):
+    row = [str(key_value.id), str(key_value.obj), str(key_value.start), str(key_value.end), str(key_value.mbr)]
+    joined = ";".join(row)
+    with open('key_value.csv', 'a') as file:
+        file.write(joined)
+        file.write(os.linesep)
+
+
 def create_key_value(trajectory_id, trajectory):
 
     # creating trajectory object
@@ -48,9 +57,13 @@ def create_key_value(trajectory_id, trajectory):
     y = []
     for row in trajectory:
         sample = Sample.from_row(row)
-        trajectory_obj.append([str(sample.timestamp), sample.x, sample.y])
+        timestamp = str(sample.timestamp)
+        trajectory_obj.append([timestamp, sample.x, sample.y])
         x.append(sample.x)
         y.append(sample.y)
+
+    trajectory_object = json.dumps(trajectory_obj)
+    print(trajectory_object)
 
     # get trajectory start timestamp
     sample_st = Sample.from_row(trajectory[0])
@@ -64,7 +77,7 @@ def create_key_value(trajectory_id, trajectory):
     # that bounds a geographic feature or a geographic dataset.
     # It is specified by two coordinate pairs: xmin, ymin and xmax, ymax.
     trajectory_mbr = [min(x), min(y), max(x), max(y)]
-    key_value = KeyValue(trajectory_id, trajectory_obj, trajectory_st, trajectory_et, trajectory_mbr)
+    key_value = KeyValue(trajectory_id, trajectory_object, trajectory_st, trajectory_et, trajectory_mbr)
     return key_value
 
 

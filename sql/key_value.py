@@ -1,6 +1,6 @@
 from consts import DB_TABLE_KEY_VALUE
-from consts import NCLOB_MAX_COMMIT
 from models.key_value import KeyValue
+from pyhdb import NClob
 
 
 def get_insert_key_value(key_value: KeyValue):
@@ -20,8 +20,6 @@ def get_insert_key_value(key_value: KeyValue):
     return sql
 
 
-def get_insert_key_values_nclob(trajectory_id: int, nclob: str):
-    sql = f'''
-        UPDATE {DB_TABLE_KEY_VALUE} SET TRAJECTORY_OBJECT=CONCAT(TRAJECTORY_OBJECT, '{nclob}') 
-        WHERE TRAJECTORY_ID={trajectory_id})'''
+def get_insert_key_values_nclob(trajectory_id, nclob: NClob):
+    sql = "UPDATE KEY_VALUE SET TRAJECTORY_OBJECT=CONCAT(TRAJECTORY_OBJECT, '{}') WHERE TRAJECTORY_ID={}".format(nclob, trajectory_id)
     return sql
