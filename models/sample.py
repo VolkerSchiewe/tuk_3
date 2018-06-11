@@ -13,10 +13,10 @@ class Sample:
 
     @classmethod
     def from_row(cls, row):
-        return Sample(row[1], row[2], row[3], row[4], row[5])
+        return Sample(row[1], row[2], row[3], row[5], row[4])
 
     def to_frame(self):
-        return Frame(self.frame_id(), self.x, self.y)
+        return Frame(self.frame_id(), self.x, self.y, self.occupancy)
 
     def frame_id(self):
         return self.timestamp.hour * 120 + self.timestamp.minute * 2 + int(self.timestamp.second / 30)

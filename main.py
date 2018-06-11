@@ -1,10 +1,10 @@
-from frame_utils import interpolate_missing_frames, group_frames_by_hour, delta_encode, add_padding
+from frame_utils import interpolate_missing_frames, group_frames, delta_encode, add_padding
 from hana_connector import HanaConnection
 from models.frame_group import FrameGroup
 from models.sample import Sample
 from sample_utils import sample_with_highest_sed
 from sql.get_trajectories_shark import trajectories_in_group_range
-from sql_utils import read_sql, insert_frame_groups
+from sql_utils import read_sql, insert_frame_groups, create_new_table
 from tracker import Tracker
 
 tracker = Tracker()
@@ -64,18 +64,19 @@ def create_frames(trajectory):
 
 
 def create_frame_groups(trajectory_id, frames):
-    groups = group_frames_by_hour(frames)
+    groups = group_frames(frames, 30)
     frame_groups = []
 
-    for group_id, frames in groups.items():
+    for (group_id, trip_id, occupancy), frames in groups.items():
+        padded_frames = add_padding(frames, 30)
         i_frame = None
         p_frames = []
-        if len(frames) > 0:
-            i_frame = frames[0]
-        if len(frames) > 1:
-            p_frames = [delta_encode(i_frame, frame) for frame in frames[1:len(frames)]]
-        padded_p_frames = add_padding(p_frames, 119)
-        frame_groups.append(FrameGroup(trajectory_id, group_id, i_frame, padded_p_frames))
+        if len(padded_frames) > 0:
+            i_frame = padded_frames[0]
+        if len(padded_frames) > 1:
+            p_frames = [delta_encode(i_frame, frame) for frame in padded_frames[1:len(padded_frames)]]
+
+        frame_groups.append(FrameGroup(trajectory_id, group_id, trip_id, occupancy, i_frame, p_frames))
 
     return frame_groups
 
@@ -87,4 +88,5 @@ def run_requests(begin_frame, begin_end, trajectory_id=None):
 
 
 if __name__ == '__main__':
-    run_requests(0, 1)
+    # run_requests(0, 1)
+    run()
