@@ -17,12 +17,10 @@ class HanaConnection(object):
                 port=30015,
                 user=hana_user,
                 password=hana_pwd,
-                autocommit=True,
                 timeout=None
             )
             self.connection.connect()
             self.cursor = self.connection.cursor()
-
             if self.schema:
                 self.cursor.execute('SET SCHEMA {}'.format(self.schema))
         except socket.gaierror as e:
