@@ -1,6 +1,6 @@
 import datetime
 
-from frame.models.sample import Sample
+from frame_trip.models.sample import Sample
 
 
 def test_frame_id():

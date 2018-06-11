@@ -1,7 +1,7 @@
 import datetime
 
-from frame.models.sample import Sample
-from frame.sample_utils import _euclidean_distance, sample_with_highest_sed
+from frame_trip.models.sample import Sample
+from frame_trip.sample_utils import _euclidean_distance, sample_with_highest_sed
 
 
 def test_euclidean_distance():

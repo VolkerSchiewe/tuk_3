@@ -1,10 +1,10 @@
-from frame.frame_utils import interpolate_missing_frames, group_frames, add_padding, delta_encode
-from frame.models.frame_group import FrameGroup
-from frame.models.sample import Sample
-from frame.sample_utils import sample_with_highest_sed
-from frame.sql.get_trajectories_shark import trajectories_in_group_range
-from frame.sql_utils import read_sql
-from frame.tracker import Tracker
+from frame_trip.frame_utils import interpolate_missing_frames, group_frames, add_padding, delta_encode
+from frame_trip.models.frame_group import FrameGroup
+from frame_trip.models.sample import Sample
+from frame_trip.sample_utils import sample_with_highest_sed
+from frame_trip.sql.get_trajectories_shark import trajectories_in_group_range
+from frame_trip.sql_utils import read_sql
+from frame_trip.tracker import Tracker
 from utils.hana_connector import HanaConnection
 
 tracker = Tracker()

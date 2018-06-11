@@ -1,7 +1,7 @@
 import pytest
 
-from frame.frame_utils import interpolate_missing_frames
-from frame.models.frame import Frame
+from frame_trip.frame_utils import interpolate_missing_frames
+from frame_trip.models.frame import Frame
 
 
 def test_interpolate_single_missing_frame():
