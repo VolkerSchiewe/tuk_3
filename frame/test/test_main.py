@@ -1,8 +1,9 @@
 import datetime
 
-from main import create_frames, create_frame_groups, add_padding, delta_encode
-from models.frame import Frame
-from models.frame_group import FrameGroup
+from frame.__main__ import create_frames, create_frame_groups
+from frame.frame_utils import add_padding, delta_encode
+from frame.models.frame import Frame
+from frame.models.frame_group import FrameGroup
 
 
 def test_create_frames_groups_sample_in_same_minute():

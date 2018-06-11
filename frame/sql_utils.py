@@ -1,5 +1,5 @@
-from sql.create_table import get_create_table
-from sql.frame_group import get_insert
+from frame.sql.create_table import get_create_table
+from frame.sql.frame_group import get_insert
 
 
 def read_sql(file_name):

@@ -1,4 +1,4 @@
-from models.frame import Frame
+from frame.models.frame import Frame
 
 
 class FrameGroup:

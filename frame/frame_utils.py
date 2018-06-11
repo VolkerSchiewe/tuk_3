@@ -1,6 +1,6 @@
 import numpy as np
 
-from models.frame import Frame
+from frame.models.frame import Frame
 
 
 def interpolate_missing_frames(previous, following):

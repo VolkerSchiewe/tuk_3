@@ -1,5 +1,5 @@
 from consts import DB_TABLE
-from models.frame_group import FrameGroup
+from frame.models.frame_group import FrameGroup
 
 
 def get_insert(frame_group: FrameGroup):

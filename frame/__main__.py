@@ -1,18 +1,18 @@
-from frame_utils import interpolate_missing_frames, group_frames, delta_encode, add_padding
-from hana_connector import HanaConnection
-from models.frame_group import FrameGroup
-from models.sample import Sample
-from sample_utils import sample_with_highest_sed
-from sql.get_trajectories_shark import trajectories_in_group_range
-from sql_utils import read_sql, insert_frame_groups, create_new_table
-from tracker import Tracker
+from frame.frame_utils import interpolate_missing_frames, group_frames, add_padding, delta_encode
+from frame.models.frame_group import FrameGroup
+from frame.models.sample import Sample
+from frame.sample_utils import sample_with_highest_sed
+from frame.sql.get_trajectories_shark import trajectories_in_group_range
+from frame.sql_utils import read_sql
+from frame.tracker import Tracker
+from utils.hana_connector import HanaConnection
 
 tracker = Tracker()
 
 
 def run():
     with HanaConnection() as connection:
-        connection.execute(read_sql("./sql/trajectories.sql"))
+        connection.execute(read_sql('./sql/trajectories.sql'))
         trajectories = connection.fetchall()
         # create_new_table(connection)
 
@@ -21,7 +21,7 @@ def run():
             trajectory = connection.fetchall()
             frames = create_frames(trajectory)
             frame_groups = create_frame_groups(trajectory_id[0], frames)
-            insert_frame_groups(connection, frame_groups)
+            # insert_frame_groups(connection, frame_groups)
             tracker.print()
 
 

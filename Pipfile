@@ -1,0 +1,19 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+pyhana = {git = "https://github.com/hpi-epic/pyhana.git", editable = true}
+numpy = "*"
+pytest = "*"
+pyhdb = {git = "https://github.com/hpi-epic/pyhana.git", editable = true, ref = "f1beecf2d1db9424af910a86b3eb1c2e02b1021e"}
+dotenv = "*"
+python-dotenv = "==0.8.2"
+
+
+[dev-packages]
+
