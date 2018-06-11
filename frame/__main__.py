@@ -11,7 +11,7 @@ tracker = Tracker()
 
 
 def run():
-    with HanaConnection() as connection:
+    with HanaConnection('TAXI') as connection:
         connection.execute(read_sql('./sql/trajectories.sql'))
         trajectories = connection.fetchall()
         # create_new_table(connection)
@@ -82,7 +82,7 @@ def create_frame_groups(trajectory_id, frames):
 
 
 def run_requests(begin_frame, begin_end, trajectory_id=None):
-    with HanaConnection() as connection:
+    with HanaConnection('TAXI') as connection:
         connection.execute(trajectories_in_group_range(begin_frame, begin_end, trajectory_id))
         return connection.fetchall()
 

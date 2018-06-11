@@ -3,11 +3,10 @@ import socket
 import logging
 import os
 
-SCHEMA = 'TAXI'
-
 
 class HanaConnection(object):
-    def __init__(self):
+    def __init__(self, schema: str = None):
+        self.schema = schema
         hana_user = os.environ.get('HANA_USER')
         hana_pwd = os.environ.get('HANA_PWD')
         if not hana_pwd and not hana_user:
@@ -23,7 +22,9 @@ class HanaConnection(object):
             )
             self.connection.connect()
             self.cursor = self.connection.cursor()
-            self.cursor.execute('SET SCHEMA {}'.format(SCHEMA))
+
+            if self.schema:
+                self.cursor.execute('SET SCHEMA {}'.format(self.schema))
         except socket.gaierror as e:
             logging.error('Database instance is not available!')
             raise e
