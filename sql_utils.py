@@ -3,7 +3,7 @@ from sql.frame_group import get_insert
 from sql.create_key_value import get_create_key_value_table
 from sql.key_value import get_insert_key_value, get_insert_key_values_nclob
 from consts import NCLOB_MAX_COMMIT
-from pyhdb import NClob
+
 
 def read_sql(file_name):
     with open(file_name) as f:
