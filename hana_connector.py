@@ -3,7 +3,7 @@ import socket
 import logging
 import os
 
-SCHEMA = 'TAXI'
+SCHEMA = 'TUK3_HNKS'
 
 
 class HanaConnection(object):

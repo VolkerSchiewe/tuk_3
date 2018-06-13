@@ -7,7 +7,7 @@ from datetime import datetime
 
 def fetch_trajectory():
     with HanaConnection() as connection:
-        connection.execute(f'''SELECT * FROM TAXI.KEY_VALUE WHERE TRAJECTORY_ID={args.tid}''')
+        connection.execute(f'''SELECT * FROM TUK3_HNKS.KEY_VALUE WHERE TRAJECTORY_ID={args.tid}''')
         trajectory = connection.fetchone()
         unpack_values(trajectory)
 

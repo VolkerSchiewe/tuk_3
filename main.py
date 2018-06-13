@@ -5,7 +5,7 @@ from models.sample import Sample
 from models.key_value import KeyValue
 from sample_utils import sample_with_highest_sed
 from sql.get_trajectories_shark import trajectories_in_group_range
-from sql_utils import read_sql, insert_frame_groups, create_new_table, insert_key_value, create_key_value_format
+from sql_utils import read_sql, insert_frame_groups, create_new_table, insert_key_value, create_key_value_format, insert_key_value_trips
 from tracker import Tracker
 import os
 import json
@@ -15,17 +15,29 @@ tracker = Tracker()
 
 def run():
     with HanaConnection() as connection:
-        connection.execute(read_sql("./sql/trajectories.sql"))
+        # IF SCHEMA = 'TUK3_HNKS'
+        connection.execute("SELECT DISTINCT ID FROM POINT_TRIPS ORDER BY ID;")
+
+        # connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
         # create_new_table(connection)
-        create_key_value_format(connection)
+        # create_key_value_format(connection)
 
         for trajectory_id in trajectories:
-            connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
+            # if SCHEMA = 'TUK3_HNKS'
+            connection.execute("SELECT * FROM POINT_TRIPS WHERE ID = {} ORDER BY TIMESTAMP".format(trajectory_id[0]))
             trajectory = connection.fetchall()
-            key_value = create_key_value(trajectory_id[0], trajectory)
-            insert_key_value(connection, key_value)
+            key_trips = create_key_trips(trajectory_id[0], trajectory)
+            print(key_trips)
+            insert_key_value_trips(connection, key_trips)
+            # write_row_to_file(key_trips)
             print(f'Trajectory {trajectory_id} was processed')
+
+            # connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
+            # trajectory = connection.fetchall()
+            # key_value = create_key_value(trajectory_id[0], trajectory)
+            # insert_key_value(connection, key_value)
+            # print(f'Trajectory {trajectory_id} was processed')
 
             #frames = create_frames(trajectory)
             #frame_groups = create_frame_groups(trajectory_id[0], frames)
@@ -34,7 +46,7 @@ def run():
 
 
 def write_to_csv(key_value: KeyValue):
-    download_dir = "key_value.csv"  # where you want the file to be downloaded to
+    download_dir = "key_trips.csv"  # where you want the file to be downloaded to
 
     csv = open(download_dir, "w")
     row = f'''{key_value.id}, {key_value.obj}, {key_value.start}, {key_value.end}, {key_value.mbr}'''
@@ -47,6 +59,29 @@ def write_row_to_file(key_value: KeyValue):
     with open('key_value.csv', 'a') as file:
         file.write(joined)
         file.write(os.linesep)
+
+
+def create_key_trips(trajectory_id, trajectory):
+    trajectory_obj = []
+    x = []
+    y = []
+    for row in trajectory:
+        sample = Sample.from_point_trips_row(row)
+        timestamp = sample.timestamp
+        trajectory_obj.append([timestamp, sample.x, sample.y])
+        x.append(sample.x)
+        y.append(sample.y)
+
+    trajectory_object = json.dumps(trajectory_obj)
+    sample_st = Sample.from_row(trajectory[0])
+    trajectory_st = sample_st.timestamp
+
+    # get trajectory end timestamp
+    sample_et = Sample.from_row(trajectory[-1])
+    trajectory_et = sample_et.timestamp
+    trajectory_mbr = [min(x), min(y), max(x), max(y)]
+    key_trips = KeyValue(trajectory_id, trajectory_object, trajectory_st, trajectory_et, trajectory_mbr)
+    return key_trips
 
 
 def create_key_value(trajectory_id, trajectory):

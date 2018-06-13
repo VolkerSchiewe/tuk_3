@@ -15,6 +15,10 @@ class Sample:
     def from_row(cls, row):
         return Sample(row[1], row[2], row[3], row[5], row[4])
 
+    @classmethod
+    def from_point_trips_row(cls, row):
+        return Sample(row[3], row[4], row[7], row[6], row[5])
+
     def to_frame(self):
         return Frame(self.frame_id(), self.x, self.y, self.occupancy)
 

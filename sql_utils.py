@@ -30,6 +30,18 @@ def insert_key_value(connection, key_value):
     print(f'Inserted key-value pair into db: {key_value.id}:{key_value.mbr}')
 
 
+def insert_key_value_trips(connection, key_trips):
+    sql = get_insert_key_value(key_trips)
+    connection.execute(sql)
+    print(key_trips.obj)
+    print(len(key_trips.obj))
+    for i in range(int(len(key_trips.obj) / NCLOB_MAX_COMMIT) + 1):
+        nclob_data = key_trips.obj[i * NCLOB_MAX_COMMIT:(i + 1) * NCLOB_MAX_COMMIT - 1]
+        update = get_insert_key_values_nclob(key_trips.id, nclob_data)
+        connection.execute(update)
+    print(f'Inserted key-value pair into db: {key_trips.id}:{key_trips.mbr}')
+
+
 def insert_frame_groups(connection, frame_groups):
     for frame_group in frame_groups:
         sql = get_insert(frame_group)
