@@ -1,7 +1,7 @@
 from sql.create_table import get_create_table
 from sql.frame_group import get_insert
 from sql.create_key_value import get_create_key_value_table
-from sql.key_value import get_insert_key_value, get_insert_key_values_nclob
+from sql.key_value import get_insert_key_value, get_insert_key_values_nclob, get_insert_key_value_trips, get_insert_key_values_trips_nclob
 from consts import NCLOB_MAX_COMMIT
 
 
@@ -31,15 +31,14 @@ def insert_key_value(connection, key_value):
 
 
 def insert_key_value_trips(connection, key_trips):
-    sql = get_insert_key_value(key_trips)
+    sql = get_insert_key_value_trips(key_trips)
     connection.execute(sql)
-    print(key_trips.obj)
-    print(len(key_trips.obj))
     for i in range(int(len(key_trips.obj) / NCLOB_MAX_COMMIT) + 1):
         nclob_data = key_trips.obj[i * NCLOB_MAX_COMMIT:(i + 1) * NCLOB_MAX_COMMIT - 1]
-        update = get_insert_key_values_nclob(key_trips.id, nclob_data)
+        update = get_insert_key_values_trips_nclob(key_trips.id, nclob_data)
         connection.execute(update)
-    print(f'Inserted key-value pair into db: {key_trips.id}:{key_trips.mbr}')
+    print(f'Inserted key-value pair into db: (id) {key_trips.id}: (start t in sec) {key_trips.start}: (end t in sec) {key_trips.end}: (mbr) {key_trips.mbr}')
+    print(f'Sample size: {len(key_trips.obj)}')
 
 
 def insert_frame_groups(connection, frame_groups):

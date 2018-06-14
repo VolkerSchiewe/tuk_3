@@ -21,17 +21,16 @@ def run():
         # connection.execute(read_sql("./sql/trajectories.sql"))
         trajectories = connection.fetchall()
         # create_new_table(connection)
-        # create_key_value_format(connection)
+        create_key_value_format(connection)
 
         for trajectory_id in trajectories:
             # if SCHEMA = 'TUK3_HNKS'
             connection.execute("SELECT * FROM POINT_TRIPS WHERE ID = {} ORDER BY TIMESTAMP".format(trajectory_id[0]))
             trajectory = connection.fetchall()
             key_trips = create_key_trips(trajectory_id[0], trajectory)
-            print(key_trips)
             insert_key_value_trips(connection, key_trips)
             # write_row_to_file(key_trips)
-            print(f'Trajectory {trajectory_id} was processed')
+            print(f'Trajectory for trip {trajectory_id[0]} was processed')
 
             # connection.execute(read_sql("./sql/get_trajectory.sql").format(trajectory_id[0]))
             # trajectory = connection.fetchall()
@@ -73,11 +72,11 @@ def create_key_trips(trajectory_id, trajectory):
         y.append(sample.y)
 
     trajectory_object = json.dumps(trajectory_obj)
-    sample_st = Sample.from_row(trajectory[0])
+    sample_st = Sample.from_point_trips_row(trajectory[0])
     trajectory_st = sample_st.timestamp
 
     # get trajectory end timestamp
-    sample_et = Sample.from_row(trajectory[-1])
+    sample_et = Sample.from_point_trips_row(trajectory[-1])
     trajectory_et = sample_et.timestamp
     trajectory_mbr = [min(x), min(y), max(x), max(y)]
     key_trips = KeyValue(trajectory_id, trajectory_object, trajectory_st, trajectory_et, trajectory_mbr)
