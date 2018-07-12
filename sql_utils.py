@@ -3,7 +3,7 @@ from sql.frame_group import get_insert
 from sql.create_key_value import get_create_key_value_table, get_drop_key_value_table
 from sql.key_value import get_insert_key_value, get_insert_key_values_nclob, get_insert_key_value_trips, \
     get_insert_key_values_trips_nclob
-from consts import NCLOB_MAX_COMMIT
+from consts import NCLOB_MAX_COMMIT, DB_TABLE_KEY_VALUE
 
 
 def read_sql(file_name):
@@ -33,14 +33,21 @@ def insert_key_value(connection, key_value):
 
 
 def insert_key_value_trips(connection, key_trips):
-    sql = get_insert_key_value_trips(key_trips)
-    connection.execute(sql)
-    # for i in range(int(len(key_trips.obj) / NCLOB_MAX_COMMIT) + 1):
-    #     nclob_data = key_trips.obj[i * NCLOB_MAX_COMMIT:(i + 1) * NCLOB_MAX_COMMIT - 1]
-    #     update = get_insert_key_values_trips_nclob(key_trips.id, nclob_data)
-    #     connection.execute(update)
-    print(
-        f'Inserted key-value pair into db: (id) {key_trips.id}: (start t in sec) {key_trips.start}: (end t in sec) {key_trips.end}: (mbr) {key_trips.mbr}')
+    if len(key_trips.obj) < NCLOB_MAX_COMMIT:
+        sql = get_insert_key_value_trips(key_trips)
+        connection.execute(sql)
+    else:
+        nclob = key_trips.obj
+        key_trips.obj = ''
+        sql = get_insert_key_value_trips(key_trips)
+        connection.execute(sql)
+        chunks = [nclob[i: i + NCLOB_MAX_COMMIT] for i in range(0, len(nclob), NCLOB_MAX_COMMIT)]
+
+        for chunk in chunks:
+            update = get_insert_key_values_trips_nclob(key_trips.id, chunk)
+            connection.execute(update)
+
+    print(f'Inserted key-value pair into db: (id) {key_trips.id}: (start t in sec) {key_trips.start}: (end t in sec) {key_trips.end}: (mbr) {key_trips.mbr}')
     print(f'Sample size: {len(key_trips.obj)}')
 
 

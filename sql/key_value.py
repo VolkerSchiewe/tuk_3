@@ -20,10 +20,10 @@ def get_insert_key_value(key_value: KeyValue):
     return sql
 
 
-def get_insert_key_values_nclob(trajectory_id, nclob: NClob):
-    sql = "UPDATE KEY_VALUE SET TRAJECTORY_OBJECT=CONCAT(TRAJECTORY_OBJECT, '{}') WHERE TRAJECTORY_ID={}".format(nclob,
-                                                                                                                 trajectory_id)
-    return sql
+def get_insert_key_values_nclob(trajectory_id, nclob: str):
+    return f'''
+        UPDATE KEY_VALUE SET TRAJECTORY_OBJECT=CONCAT(TRAJECTORY_OBJECT, '{nclob}') 
+        WHERE TRAJECTORY_ID={trajectory_id}'''
 
 
 def get_insert_key_value_trips(key_value: KeyValue):
@@ -33,6 +33,7 @@ def get_insert_key_value_trips(key_value: KeyValue):
         '''
 
 
-def get_insert_key_values_trips_nclob(trajectory_id, nclob: NClob):
-    sql = "UPDATE KEY_VALUE_TRIPS SET OBJ=CONCAT(OBJ, '{}') WHERE ID={}".format(nclob, trajectory_id)
-    return sql
+def get_insert_key_values_trips_nclob(trajectory_id, nclob: str):
+    return f'''
+        UPDATE {DB_TABLE_KEY_VALUE} SET OBJ=CONCAT(OBJ, '{nclob}') 
+        WHERE ID={trajectory_id}'''
