@@ -1,3 +1,3 @@
-pyhana
+git+https://github.com/hpi-epic/pyhana.git#egg=pyhana
 numpy
 pytest
