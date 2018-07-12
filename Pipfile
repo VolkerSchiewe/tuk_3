@@ -6,9 +6,9 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-pyhana = {git = "https://github.com/hpi-epic/pyhana.git"}
 numpy = "*"
 pytest = "*"
+pyhana = {git = "https://github.com/philipphager/pyHANA.git"}
 
 [requires]
 python_version = "3.6"

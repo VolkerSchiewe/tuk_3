@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0044f54b6b64d31a970ba0e0d469f8e8313edd0220ee48368038532f31a1914d"
+            "sha256": "6ec58694a4111aef4d591e766e5d15e31fb2a583bc7ad504d9d15f58dc72a864"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -89,7 +89,7 @@
             "version": "==1.5.4"
         },
         "pyhana": {
-            "git": "https://github.com/hpi-epic/pyhana.git",
+            "git": "https://github.com/philipphager/pyHANA.git",
             "ref": "f1beecf2d1db9424af910a86b3eb1c2e02b1021e"
         },
         "pytest": {
